@@ -1,0 +1,338 @@
+{
+  "name": "product evaluation agent",
+  "nodes": [
+    {
+      "parameters": {
+        "operation": "text",
+        "options": {}
+      },
+      "id": "e9445a51-a014-4e2a-8f44-937223a50832",
+      "name": "Extract from File",
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        600,
+        460
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "operation": "get",
+        "owner": {
+          "__rl": true,
+          "value": "lorajjo",
+          "mode": "name"
+        },
+        "repository": {
+          "__rl": true,
+          "value": "fmms",
+          "mode": "list",
+          "cachedResultName": "fmms",
+          "cachedResultUrl": "https://github.com/lorajjo/fmms"
+        },
+        "filePath": "personas.txt",
+        "additionalParameters": {}
+      },
+      "id": "b3bf3bf8-c62a-4ceb-a52e-91cf93f43292",
+      "name": "GitHub",
+      "type": "n8n-nodes-base.github",
+      "typeVersion": 1,
+      "position": [
+        460,
+        460
+      ],
+      "credentials": {
+        "githubApi": {
+          "id": "iTQCGfmhE3IdcWDd",
+          "name": "GitHub account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "language": "python",
+        "pythonCode": "persona=[]\nfor item in _input.all():\n  data=item.json[\"data\"]\n  text=\" \"\n  for i in data:\n    if i==\"\\n\":\n      persona.append({ \"json\": { \"query\":text} })\n      text=\"\"\n    else:\n      text+=str(i)\n    \nreturn persona"
+      },
+      "id": "85bff295-1879-4746-88fd-81fb15f75bfc",
+      "name": "Code",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        740,
+        460
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "8518473e-6b17-4af8-b01b-3c4f54bd481c",
+              "leftValue": "={{ $json.query }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "deee2508-4c26-41df-8d17-feba4075d3a6",
+      "name": "Filter",
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        880,
+        460
+      ]
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-1.5-flash-8b",
+        "options": {}
+      },
+      "id": "7be32d7b-d9bb-4e5c-9a07-63df84b98b07",
+      "name": "Google Gemini Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        1660,
+        600
+      ],
+      "credentials": {
+        "googlePalmApi": {
+          "id": "JbEhKxehH5blT25V",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "language": "python",
+        "pythonCode": "persona=[]\npersona.append({ \"json\": { \"pesonality\":\"optimistic\"} })\npersona.append({ \"json\": { \"pesonality\":\"nutral\"} })\npersona.append({ \"json\": { \"pesonality\":\"pesimistic\"} })\nreturn persona"
+      },
+      "id": "1d41b5ae-309e-4f77-b413-3d70bfbed3c8",
+      "name": "Code1",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        600,
+        680
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineAll",
+        "options": {}
+      },
+      "id": "5a41c7c1-1cd6-4141-95aa-5b0b253cd501",
+      "name": "Merge1",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        740,
+        600
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineAll",
+        "options": {}
+      },
+      "id": "ac93c945-78b7-4a95-9a6c-24384f7e85e2",
+      "name": "Merge",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        1400,
+        580
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "6fb2c23e-567d-46e0-9eb1-a58cef976fd1",
+      "name": "Execute Workflow Trigger",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1,
+      "position": [
+        260,
+        580
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ \"you are \"+$json.query }}{{\"your personality is\"+ $json.pesonality }}{{\"will you purchase our product/service if yes than start you sentence with yes else explain why you wont use our service the description is ->\"+ $json.description }}"
+      },
+      "id": "39c2d57c-980d-4351-a2b8-000d4bd70d28",
+      "name": "Basic LLM Chain1",
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.5,
+      "position": [
+        1640,
+        460
+      ]
+    },
+    {
+      "parameters": {
+        "language": "python",
+        "pythonCode": "persona=[]\ntmp=[]\ncount=0\nfor item in _input.all():\n  data=item.json[\"text\"]\n  count+=1\n  tmp.append(\"persona\"+str(count)+\"\\n\"+data)\ndatta=\"\\n\\n\".join(tmp)\npersona.append({ \"json\": { \"query\":datta} })\n\nreturn persona"
+      },
+      "id": "c7ed0918-7015-4e07-ab1a-19d5c2131e79",
+      "name": "Code2",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1940,
+        460
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GitHub": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Filter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code1": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge1": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute Workflow Trigger": {
+      "main": [
+        [
+          {
+            "node": "GitHub",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Code1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain1": {
+      "main": [
+        [
+          {
+            "node": "Code2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "ceff1f25-6b13-4346-89d7-7dbfac07e6be",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "99c9ad39e037c576bf627b0a002067b5148ead85aca0a4be5a600b828820ae34"
+  },
+  "id": "s7BxVkyrpFfEQEAN",
+  "tags": []
+}

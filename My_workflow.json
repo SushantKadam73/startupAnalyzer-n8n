@@ -1,0 +1,533 @@
+{
+  "name": "My workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "market agent manager",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "what are you looking for"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "65dd288e-073b-4f0b-a263-75c31bb9a0ef",
+      "name": "On form submission",
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.2,
+      "position": [
+        360,
+        -120
+      ],
+      "webhookId": "221cc420-5be7-4d13-800f-e9eff572d442"
+    },
+    {
+      "parameters": {
+        "language": "python",
+        "pythonCode": "output=[]\nfor item in _input.all():\n  data=item.json\n  for i in data:\n    field=i\n    break\n  ans=item.json[field]\n  output.append({\"json\":{\"description\":ans}})\nreturn output"
+      },
+      "id": "d06fa1c8-8c0a-482c-b6ed-d20e0f1e147e",
+      "name": "Code",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1920,
+        -140
+      ]
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "xPlKI6Mntw2Sd3Wc",
+          "mode": "list",
+          "cachedResultName": "My workflow 2"
+        },
+        "options": {}
+      },
+      "id": "fc4eaa26-dcd6-4c2d-98d0-f658cb676148",
+      "name": "Execute Workflow3",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.1,
+      "position": [
+        2180,
+        -580
+      ]
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "a79Z8VYJ3nRinykN",
+          "mode": "list",
+          "cachedResultName": "customer discovery agent"
+        },
+        "options": {}
+      },
+      "id": "9e0f88c1-a595-4f2f-a7be-55a6afc83eaf",
+      "name": "customer discovery agent",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.1,
+      "position": [
+        2180,
+        -360
+      ]
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "s7BxVkyrpFfEQEAN",
+          "mode": "list",
+          "cachedResultName": "product evaluation agent"
+        },
+        "options": {}
+      },
+      "id": "93a0759c-20f0-40a8-89b0-afa4b0a7e217",
+      "name": "product evaluation agent",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.1,
+      "position": [
+        2180,
+        -140
+      ]
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "Cl3SqGZBdoNE5irw",
+          "mode": "list",
+          "cachedResultName": "competitive edge anylysys"
+        },
+        "options": {}
+      },
+      "id": "f3f31676-cfc0-4403-897a-da0b9ea7ba36",
+      "name": "Execute Workflow2",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.1,
+      "position": [
+        2180,
+        80
+      ],
+      "alwaysOutputData": false,
+      "executeOnce": false,
+      "retryOnFail": false,
+      "notesInFlow": false
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "E56n8YCiFm71uA7f",
+          "mode": "list",
+          "cachedResultName": "market expansion advisor"
+        },
+        "options": {}
+      },
+      "id": "66c18626-6caa-4d29-99e8-9d8be2fa6a9f",
+      "name": "market expeansion advisor",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.1,
+      "position": [
+        2180,
+        260
+      ]
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-1.5-pro",
+        "options": {}
+      },
+      "id": "84a9f344-c21a-4849-8da4-fccfbc71e8bd",
+      "name": "Google Gemini Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        860,
+        0
+      ],
+      "credentials": {
+        "googlePalmApi": {
+          "id": "JbEhKxehH5blT25V",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "12",
+        "contextWindowLength": 100
+      },
+      "id": "4e52ad66-7e01-4fe0-9c82-571413b766b3",
+      "name": "Window Buffer Memory",
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        960,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "language": "python",
+        "pythonCode": "output=[]\nfor item in _input.all():\n  data=item.json\n  for i in data:\n    field=i\n    break\n  ans=item.json[field]\n  output.append({\"json\":{\"description\":ans}})\nreturn output"
+      },
+      "id": "c3ca1676-a5a4-47de-84ae-d9e7d32b40f3",
+      "name": "Code1",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        680,
+        -120
+      ]
+    },
+    {
+      "parameters": {
+        "language": "python",
+        "pythonCode": "output=[]\nfor item in _input.all():\n  data=item.json\n  for i in data:\n    field=i\n    break\n  ans=item.json[field]\n  output.append({\"json\":{\"description\":ans}})\nreturn output"
+      },
+      "id": "30a70b72-fe00-4149-90d9-a73dac93a644",
+      "name": "Code2",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1460,
+        -120
+      ]
+    },
+    {
+      "parameters": {
+        "language": "python",
+        "pythonCode": "output=[]\nfor item in _input.all():\n  data=item.json\n  for i in data:\n    field=i\n    break\n  ans=item.json[field]\n  output.append({\"json\":{\"description\":\"make a propper concise total summary of \"+ans}})\nreturn output"
+      },
+      "id": "a9fc50f6-f5e3-4230-be33-d880053a26b2",
+      "name": "Code4",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        520,
+        -120
+      ]
+    },
+    {
+      "parameters": {
+        "agent": "conversationalAgent",
+        "promptType": "define",
+        "text": "={{ $json.description }}",
+        "options": {}
+      },
+      "id": "38f35722-1cb9-4796-b2d5-e25cd5f2ecd4",
+      "name": "AI Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        840,
+        -120
+      ]
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-1.5-pro",
+        "options": {}
+      },
+      "id": "51bd10a3-cd71-4485-b22d-0630c02b98a3",
+      "name": "Google Gemini Chat Model1",
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        2680,
+        -20
+      ],
+      "credentials": {
+        "googlePalmApi": {
+          "id": "JbEhKxehH5blT25V",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "12",
+        "contextWindowLength": 100
+      },
+      "id": "227fe29a-1256-4166-88f6-dfd0c4242b37",
+      "name": "Window Buffer Memory1",
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        2780,
+        -20
+      ]
+    },
+    {
+      "parameters": {
+        "agent": "conversationalAgent",
+        "promptType": "define",
+        "text": "={{ $json.description }}",
+        "options": {}
+      },
+      "id": "f0aba13f-b388-44e4-8c50-367879356ab1",
+      "name": "AI Agent1",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        2660,
+        -140
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "owner": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        },
+        "repository": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        }
+      },
+      "id": "666bb17e-0569-4be5-b5a9-3e9ae6a981f5",
+      "name": "GitHub",
+      "type": "n8n-nodes-base.github",
+      "typeVersion": 1,
+      "position": [
+        2400,
+        -140
+      ],
+      "credentials": {
+        "githubApi": {
+          "id": "iTQCGfmhE3IdcWDd",
+          "name": "GitHub account"
+        }
+      }
+    }
+  ],
+  "pinData": {
+    "On form submission": [
+      {
+        "json": {
+          "what are you looking for": "a crypto chain that invest the money raised in farmland",
+          "submittedAt": "2024-11-25T02:00:40.124+05:30",
+          "formMode": "test"
+        }
+      }
+    ]
+  },
+  "connections": {
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "Code4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Execute Workflow2",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "product evaluation agent",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "customer discovery agent",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "market expeansion advisor",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Execute Workflow3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Window Buffer Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code1": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code2": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code4": {
+      "main": [
+        [
+          {
+            "node": "Code1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute Workflow3": {
+      "main": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Code2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Window Buffer Memory1": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "customer discovery agent": {
+      "main": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "market expeansion advisor": {
+      "main": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute Workflow2": {
+      "main": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "product evaluation agent": {
+      "main": [
+        [
+          {
+            "node": "GitHub",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GitHub": {
+      "main": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "4a85a8ef-0987-4d16-b330-495df91dc6a7",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "99c9ad39e037c576bf627b0a002067b5148ead85aca0a4be5a600b828820ae34"
+  },
+  "id": "X2vgdsczrpU3532B",
+  "tags": []
+}

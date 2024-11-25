@@ -1,0 +1,113 @@
+{
+  "name": "competitive edge anylysys",
+  "nodes": [
+    {
+      "parameters": {
+        "operation": "toText",
+        "sourceProperty": "text",
+        "binaryPropertyName": "=data {{ $json.text }}",
+        "options": {}
+      },
+      "id": "5bc34bfc-7431-4327-8346-ff8db04ef106",
+      "name": "Convert to File",
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        1240,
+        340
+      ]
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-1.5-flash-8b",
+        "options": {}
+      },
+      "id": "fddeab7e-3fc9-44fd-8314-1e8e2599bb2e",
+      "name": "Google Gemini Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        940,
+        500
+      ],
+      "credentials": {
+        "googlePalmApi": {
+          "id": "JbEhKxehH5blT25V",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "id": "9852aa68-f8e3-4c38-a911-41dc5f144164",
+      "name": "Execute Workflow Trigger",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1,
+      "position": [
+        700,
+        340
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ \"find me this product and tell me how many companies have this product\"+ $json.description }}"
+      },
+      "id": "a631c331-2d94-457f-b07b-ed841999bf8e",
+      "name": "Basic LLM Chain",
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.5,
+      "position": [
+        920,
+        340
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute Workflow Trigger": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Convert to File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "21bcf1d8-5c3d-4af1-935f-870e73e09322",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "99c9ad39e037c576bf627b0a002067b5148ead85aca0a4be5a600b828820ae34"
+  },
+  "id": "Cl3SqGZBdoNE5irw",
+  "tags": []
+}

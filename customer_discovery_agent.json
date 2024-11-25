@@ -1,0 +1,1133 @@
+{
+  "name": "customer discovery agent",
+  "nodes": [
+    {
+      "parameters": {
+        "language": "python",
+        "pythonCode": "output=[]\nfor item in _input.all():\n    # Process each item\n    querry = item.json[\"qeury\"]+\"my product is \"+item.json[\"description\"]\n    output.append({ \"json\": { \"query\":querry } })\nreturn output"
+      },
+      "id": "fd6af512-bb2e-41cb-8963-796c2ee8fa8a",
+      "name": "Code",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -380,
+        620
+      ]
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-1.5-flash-8b",
+        "options": {}
+      },
+      "id": "daa374d1-25b8-42d3-834d-4642eff0ff3e",
+      "name": "Google Gemini Chat Model1",
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        360,
+        840
+      ],
+      "credentials": {
+        "googlePalmApi": {
+          "id": "JbEhKxehH5blT25V",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.text }}",
+        "messages": {
+          "messageValues": [
+            {
+              "type": "HumanMessagePromptTemplate",
+              "message": "give me the names of the people that are mentioned please dont provide any description"
+            }
+          ]
+        }
+      },
+      "id": "0cb15de4-9bf8-4459-90bc-1c36e5fdc0c3",
+      "name": "Basic LLM Chain1",
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.5,
+      "position": [
+        140,
+        620
+      ]
+    },
+    {
+      "parameters": {
+        "language": "python",
+        "pythonCode": "output=[]\nfor item in _input.all():\n    persons= item.json[\"query\"]\n    for i in persons:\n      querry=\"make a 60 word description of a persona who is pesimistic and \"+i\n      output.append({ \"json\": { \"query\":querry} })\n      querry=\"make a 60 word description of a persona who is optimistic and \"+i\n      output.append({ \"json\": { \"query\":querry} })\nreturn output"
+      },
+      "id": "fce9b37b-ddce-4085-8c1e-d78fa9a973fd",
+      "name": "Code2",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        680,
+        620
+      ]
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-1.5-flash-8b",
+        "options": {}
+      },
+      "id": "cf4f01f4-255a-411a-85da-a341753dd15b",
+      "name": "Google Gemini Chat Model4",
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        1300,
+        1060
+      ],
+      "notesInFlow": false,
+      "credentials": {
+        "googlePalmApi": {
+          "id": "JbEhKxehH5blT25V",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "language": "python",
+        "pythonCode": "output=[]\nfor item in _input.all():\n    desc= item.json[\"description\"]\n    output.append({ \"json\": { \"description\":desc} })\nreturn output"
+      },
+      "id": "59701663-423a-4a5d-a238-e3273664dc53",
+      "name": "Code5",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -380,
+        920
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.query }}",
+        "messages": {
+          "messageValues": [
+            {
+              "type": "HumanMessagePromptTemplate",
+              "message": "who will use my product"
+            }
+          ]
+        }
+      },
+      "id": "eeb5efd4-fc37-441e-b321-907fed08ba2f",
+      "name": "Basic LLM Chain",
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.5,
+      "position": [
+        -160,
+        620
+      ],
+      "alwaysOutputData": false,
+      "executeOnce": false,
+      "retryOnFail": false,
+      "notesInFlow": false
+    },
+    {
+      "parameters": {
+        "language": "python",
+        "pythonCode": "output=[]\nfor item in _input.all():\n    persons= item.json[\"text\"]\n    tmp_person=\"\"\n    total_person=[]\n    for i in persons:\n      if i == \"\\n\" or i==\",\":\n        total_person.append(tmp_person)\n        tmp_person=\"\"\n      else:\n        tmp_person+=i\n    output.append({ \"json\": { \"query\":total_person} })\nreturn output"
+      },
+      "id": "219a32b2-5427-467c-a697-b77d6ab95e59",
+      "name": "Code1",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        460,
+        620
+      ],
+      "alwaysOutputData": false,
+      "executeOnce": false,
+      "retryOnFail": false,
+      "notesInFlow": false
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "query",
+        "options": {
+          "disableDotNotation": true
+        }
+      },
+      "id": "2ec7d61b-1c2f-4ede-8c75-02f3e486a43b",
+      "name": "Split Out",
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        680,
+        420
+      ]
+    },
+    {
+      "parameters": {
+        "language": "python",
+        "pythonCode": "output=[]\nfor item in _input.all():\n    desc= item.json[\"text\"]\n    output.append({ \"json\": { \"character\":desc} })\nreturn output"
+      },
+      "id": "4a5b0d4e-755d-4622-b931-913c9626795a",
+      "name": "Code6",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1180,
+        620
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineAll",
+        "options": {}
+      },
+      "id": "4a1ab72c-1905-4484-a9f3-ad49f9b4987d",
+      "name": "Merge",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        1140,
+        900
+      ]
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-1.5-flash-8b",
+        "options": {}
+      },
+      "id": "5fa144de-e99e-48c1-89f4-9490ca252c47",
+      "name": "Google Gemini Chat Model5",
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -340,
+        1320
+      ],
+      "credentials": {
+        "googlePalmApi": {
+          "id": "JbEhKxehH5blT25V",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ \"you are\"+$json.text }}{{ \"what are your views on the topic of\"+$json.description }}"
+      },
+      "id": "ce0cc7e3-f367-403d-aa48-3fe17b0e3b38",
+      "name": "Basic LLM Chain3",
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.5,
+      "position": [
+        1280,
+        900
+      ]
+    },
+    {
+      "parameters": {
+        "language": "python",
+        "pythonCode": "output=[]\nfor item in _input.all():\n    desc= item.json[\"description\"]\n    output.append({ \"json\": { \"qeury\": \"find me the customer who will use my product\",\"description\":desc} })\nreturn output"
+      },
+      "id": "08b23746-2ba5-4949-b0da-d46831eac07e",
+      "name": "Code4",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -600,
+        920
+      ]
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-1.5-flash-8b",
+        "options": {}
+      },
+      "id": "9c802417-2f84-43f4-8da7-6ed585e8a732",
+      "name": "Google Gemini Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        1480,
+        1700
+      ],
+      "credentials": {
+        "googlePalmApi": {
+          "id": "JbEhKxehH5blT25V",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "language": "python",
+        "pythonCode": "output=[]\nfor item in _input.all():\n  try:\n    qesu=\"are their any other oppertunities\"\n    qestion=item.json[\"qestion\"]\n    text=item.json[\"text\"]\n    if qestion==text:\n      pass\n    else:\n      qestion=qestion+text\n    answer=item.json[\"answer\"]\n    output.append({ \"json\": {\"answer\":(answer+\" and \"+qesu),\"qestion\":qestion}})\n  except:\n    qesu=\"are their any other oppertunities\"\n    text=item.json[\"text\"]\n    output.append({ \"json\": {\"answer\":qesu,\"qestion\":text}})\n\nreturn output"
+      },
+      "id": "ee091c47-1045-4221-8a1c-d80f1be5fb1d",
+      "name": "Code3",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        380,
+        1520
+      ]
+    },
+    {
+      "parameters": {
+        "language": "python",
+        "pythonCode": "output=[]\nfor item in _input.all():\n    try:\n      answer=item.json[(item.json[\"text\"])]\n      quest=item.json[\"text\"]\n      ai=item.json[\"qesu\"]\n      output.append({ \"json\": {\"qestion\":quest, \"answer\":answer,\"text\":ai} })\n    except:\n      answer=item.json['text']\n      output.append({ \"json\": { \"answer\":answer} })\nreturn output"
+      },
+      "id": "017ff193-6ae5-45b8-a18f-21c8555d8d50",
+      "name": "Code7",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1220,
+        1300
+      ]
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "8ff80362-bb0c-463f-a26c-6bb77f64d080",
+      "name": "Google Gemini Chat Model2",
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        1480,
+        1420
+      ],
+      "notesInFlow": false,
+      "credentials": {
+        "googlePalmApi": {
+          "id": "JbEhKxehH5blT25V",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "905dd5ec-2238-4e5a-8b20-ef56a87bd448",
+              "leftValue": "={{ $json.text }}",
+              "rightValue": "I need more details",
+              "operator": {
+                "type": "string",
+                "operation": "startsWith"
+              }
+            },
+            {
+              "id": "d27269c4-0b94-42e0-a443-e28b2ad8711b",
+              "leftValue": "=",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "f3339207-7d57-400f-8a23-436f697b0bfc",
+      "name": "If",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -40,
+        1140
+      ]
+    },
+    {
+      "parameters": {
+        "language": "python",
+        "pythonCode": "output=[]\nfor item in _input.all():\n    try:\n      text=item.json[\"text\"]\n      qesu=\"please give me more description\"\n      output.append({ \"json\": {\"qesu\":text,\"text\":qesu}})\n    except:\n      qesu=\"please give me more description\"\n      output.append({ \"json\": {\"qesu\":text,\"text\":qesu}})\nreturn output"
+      },
+      "id": "94fca0ae-e95f-4025-9bc6-7de3dbb28f2a",
+      "name": "Code9",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        300,
+        1340
+      ]
+    },
+    {
+      "parameters": {
+        "language": "python",
+        "pythonCode": "\noutput=[]\ndata_in=[]\nfor item in _input.all():\n  char=item.json['query']\n  data_in.append(char)\ndata=\"\\n\".join(data_in)\ndata=\"a comprihensive report \\n \\n\"+data\noutput.append({ \"json\": { \"query\":data} })\nreturn output"
+      },
+      "id": "a2b76ed5-6ea8-4955-9a79-b96e40165808",
+      "name": "Code10",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2240,
+        980
+      ],
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {},
+      "id": "9b5f413d-b852-41e7-8d79-5671bd8c133a",
+      "name": "Execute Workflow Trigger",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1,
+      "position": [
+        -740,
+        920
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {
+          "includeUnpaired": true
+        }
+      },
+      "id": "469206d8-ceec-4547-aa12-613ec0bfacbf",
+      "name": "Merge2",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        600,
+        1340
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ \"find similar products if you want more info then start sentance with I need more details ->\"+$json.description }}",
+        "messages": {
+          "messageValues": [
+            {
+              "type": "HumanMessagePromptTemplate",
+              "message": "who will use my product"
+            }
+          ]
+        }
+      },
+      "id": "a28e895c-e491-4ae0-901a-020cc6af5a33",
+      "name": "Basic LLM Chain4",
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.5,
+      "position": [
+        -360,
+        1140
+      ],
+      "alwaysOutputData": false,
+      "executeOnce": false,
+      "retryOnFail": false,
+      "notesInFlow": false
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "0167334b-f310-408b-8c24-84314ff87780",
+      "name": "Google Gemini Chat Model6",
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        640,
+        1600
+      ],
+      "notesInFlow": false,
+      "credentials": {
+        "googlePalmApi": {
+          "id": "JbEhKxehH5blT25V",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{\"rephrase this and give me more detailed way and tell me as if you were presenting\"+ $json.description }}"
+      },
+      "id": "2ca59940-bbd0-48c1-98be-66691a45f6c9",
+      "name": "Basic LLM Chain8",
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.5,
+      "position": [
+        620,
+        1440
+      ],
+      "alwaysOutputData": false,
+      "executeOnce": false,
+      "retryOnFail": false,
+      "notesInFlow": false
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{$json.answer}}"
+      },
+      "id": "32346ba3-e3f8-4366-8219-d7da065e599a",
+      "name": "Basic LLM Chain6",
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.5,
+      "position": [
+        1460,
+        1300
+      ],
+      "alwaysOutputData": false,
+      "executeOnce": false,
+      "retryOnFail": false,
+      "notesInFlow": false
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "numberInputs": 3,
+        "options": {
+          "includeUnpaired": true
+        }
+      },
+      "id": "ed8ed010-637e-4d04-85b1-5451ade19bd1",
+      "name": "Merge3",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        960,
+        1300
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "id": "f76e3444-c058-468a-b8aa-8b5eb0657348",
+      "name": "Merge1",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        1600,
+        640
+      ]
+    },
+    {
+      "parameters": {
+        "language": "python",
+        "pythonCode": "output=[]\nfor item in _input.all():\n  response=item.json['text']\n  data=\"a stage presentation (\"+response+\")\"\n  output.append({ \"json\": { \"query\":data} })\n  \nreturn output"
+      },
+      "id": "499a38e6-7835-4168-8ac2-9c6e9641527d",
+      "name": "Code11",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1760,
+        1300
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{$json.answer}}",
+        "messages": {
+          "messageValues": [
+            {
+              "type": "AIMessagePromptTemplate",
+              "message": "={{ $json.qestion }}"
+            }
+          ]
+        }
+      },
+      "id": "f22b92f4-454b-4909-ba2d-68132f5163b0",
+      "name": "Basic LLM Chain5",
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.5,
+      "position": [
+        1460,
+        1540
+      ],
+      "alwaysOutputData": false,
+      "executeOnce": false,
+      "retryOnFail": false,
+      "notesInFlow": false
+    },
+    {
+      "parameters": {
+        "language": "python",
+        "pythonCode": "output=[]\nfor item in _input.all():\n  response=item.json['text']\n  data=\"a comment(\"+response+\")\"\n  output.append({ \"json\": { \"query\":data} })\n  \nreturn output"
+      },
+      "id": "82d65c58-fc85-424f-9d76-3e884ff24e34",
+      "name": "Code12",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1760,
+        1540
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "toText",
+        "sourceProperty": "query",
+        "binaryPropertyName": "=data {{ $json.query }}",
+        "options": {}
+      },
+      "id": "e33cda20-1b54-4383-ad28-32b8edad91b7",
+      "name": "Convert to File",
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        2400,
+        980
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.query }}"
+      },
+      "id": "978703c8-ad82-411a-929d-7f3147189f7a",
+      "name": "Basic LLM Chain2",
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.5,
+      "position": [
+        820,
+        620
+      ]
+    },
+    {
+      "parameters": {
+        "language": "python",
+        "pythonCode": "\noutput=[]\ndata_in=[]\nfor item in _input.all():\n  char=item.json['query']\n  data_in.append(char)\ndata=\",\".join(data_in)\ndata=\" people that likly purchase product \"+data\noutput.append({ \"json\": { \"query\":data} })\nreturn output"
+      },
+      "id": "b9fe5d25-d2f8-4661-ac80-c62f8493974b",
+      "name": "Code13",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1760,
+        420
+      ]
+    },
+    {
+      "parameters": {
+        "language": "python",
+        "pythonCode": "\noutput=[]\nfor item in _input.all():\n  char=item.json['character']\n  response=item.json['text']\n  data=\"opinin of a persin named (\"+char+\") his view is \"+response\n  output.append({ \"json\": { \"query\":data} })\n  \nreturn output"
+      },
+      "id": "bc66c3f9-20df-453b-9c1a-c2d5fbe76614",
+      "name": "Code8",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1760,
+        640
+      ]
+    },
+    {
+      "parameters": {
+        "numberInputs": 4
+      },
+      "id": "30ec339c-b419-491e-96fa-33989d478749",
+      "name": "Merge4",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        2080,
+        960
+      ]
+    },
+    {
+      "parameters": {
+        "path": "44593a47-4b8a-4edf-8401-361a514b2fc1",
+        "options": {}
+      },
+      "id": "adce3d31-f63e-4889-83a7-b85ee554c940",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        1980,
+        640
+      ],
+      "webhookId": "44593a47-4b8a-4edf-8401-361a514b2fc1"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Basic LLM Chain1",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Basic LLM Chain2",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain1": {
+      "main": [
+        [
+          {
+            "node": "Code1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code2": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model4": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain3",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code5": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code1": {
+      "main": [
+        [
+          {
+            "node": "Code2",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Code13",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code6": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model5": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain4",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain3": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Code4": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Code5",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Basic LLM Chain4",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Basic LLM Chain8",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain5",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code3": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code7": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain6",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain6",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Merge2",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge3",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Code3",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Code9",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code9": {
+      "main": [
+        [
+          {
+            "node": "Merge2",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Code10": {
+      "main": [
+        [
+          {
+            "node": "Convert to File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute Workflow Trigger": {
+      "main": [
+        [
+          {
+            "node": "Code4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge2": {
+      "main": [
+        [
+          {
+            "node": "Merge3",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain4": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model6": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain8",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain8": {
+      "main": [
+        [
+          {
+            "node": "Merge3",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain6": {
+      "main": [
+        [
+          {
+            "node": "Code11",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge3": {
+      "main": [
+        [
+          {
+            "node": "Code7",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge1": {
+      "main": [
+        [
+          {
+            "node": "Code8",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code11": {
+      "main": [
+        [
+          {
+            "node": "Merge4",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain5": {
+      "main": [
+        [
+          {
+            "node": "Code12",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code12": {
+      "main": [
+        [
+          {
+            "node": "Merge4",
+            "type": "main",
+            "index": 3
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain2": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Code6",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code13": {
+      "main": [
+        [
+          {
+            "node": "Merge4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code8": {
+      "main": [
+        [
+          {
+            "node": "Merge4",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge4": {
+      "main": [
+        [
+          {
+            "node": "Code10",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "any"
+  },
+  "versionId": "96d1fdc9-6d98-415d-852a-b068d5ba0984",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "99c9ad39e037c576bf627b0a002067b5148ead85aca0a4be5a600b828820ae34"
+  },
+  "id": "a79Z8VYJ3nRinykN",
+  "tags": []
+}

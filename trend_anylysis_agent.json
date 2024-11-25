@@ -1,0 +1,125 @@
+{
+  "name": "trend anylysis agent",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "10a13513-4bc2-4dbd-9d0b-0a8931130c8b",
+      "name": "Execute Workflow Trigger",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1,
+      "position": [
+        460,
+        460
+      ]
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-1.5-flash-8b",
+        "options": {}
+      },
+      "id": "1bf7f8ba-7a74-4901-9184-01720b1b934b",
+      "name": "Google Gemini Chat Model1",
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        620,
+        600
+      ],
+      "credentials": {
+        "googlePalmApi": {
+          "id": "JbEhKxehH5blT25V",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "toText",
+        "sourceProperty": "text",
+        "binaryPropertyName": "=data {{ $json.text }}",
+        "options": {}
+      },
+      "id": "dfccbe25-85d4-416a-8d6f-bd315b9244b5",
+      "name": "Convert to File",
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        920,
+        460
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ \"is my product is supported by product trend ,product description->\"+ $json.description }}",
+        "messages": {
+          "messageValues": [
+            {
+              "type": "HumanMessagePromptTemplate",
+              "message": "who will use my product"
+            }
+          ]
+        }
+      },
+      "id": "ec427df7-d9c3-4804-8575-3ab13d648fd5",
+      "name": "Basic LLM Chain",
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.5,
+      "position": [
+        620,
+        460
+      ],
+      "alwaysOutputData": false,
+      "executeOnce": false,
+      "retryOnFail": false,
+      "notesInFlow": false
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Google Gemini Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute Workflow Trigger": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Convert to File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "1e651382-db62-4682-b862-2352c72dbd18",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "99c9ad39e037c576bf627b0a002067b5148ead85aca0a4be5a600b828820ae34"
+  },
+  "id": "xPlKI6Mntw2Sd3Wc",
+  "tags": []
+}
