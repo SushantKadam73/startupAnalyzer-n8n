@@ -1,3 +1,9 @@
+
+
+**Startup Analyzer using n8n Workflow Automation tool**
+
+import these code files to n8n and then use it.
+
 Startup founders can use this tool to review, validate their idea. Get a detailed analysis report on Market Analysis Engine, Customer Discovery Module, Competitive Intelligence System, Product Evolution Engine,  Market Expansion Advisor.  Here we have a manager agent, summarizing agent and 5 category agenrts for doing specific task like  Market Analysis, Customer Discovery Module, Competitive Intelligence System, Product Evolution Engine and Market Expansion Advisor. 
 All the agent are using gemini 1.5 flash model and have memory as windows buffer. 
 
